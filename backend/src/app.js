@@ -8,6 +8,7 @@ import User from './models/users.models.js';
 import Admin from "./models/admin.models.js"
 const app=express();
 dotenv.config();
+app.use(express.json())
 
 let port = process.env.PORT || 8080;
 
