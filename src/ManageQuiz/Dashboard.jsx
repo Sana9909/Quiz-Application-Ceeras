@@ -8,6 +8,7 @@ import ActivityTable from "./ActivityTable";
 
 function Dashboard() {
   const [activeNav, setActiveNav] = useState("Dashboard");
+  const displayName = localStorage.getItem("displayName") || "User"; // Retrieve displayName from local storage
 
   // Mock data for stats
   const statsData = [
@@ -43,7 +44,7 @@ function Dashboard() {
       <DashboardHeader
         activeNav={activeNav}
         onNavClick={handleNavClick}
-        userName="John Doe"
+        userName={displayName}
       />
 
       <section className={styles.statsContainer} aria-label="User Statistics">

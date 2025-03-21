@@ -40,7 +40,7 @@ describe("AdminDashboard", () => {
   it("renders the user requests section", () => {
     render(<AdminDashboard />);
     expect(screen.getByText("Recent User Requests")).toBeInTheDocument();
-    expect(screen.getByText("Sarah Johnson")).toBeInTheDocument();
+    expect(screen.getByText("Shiva Johnson")).toBeInTheDocument();
     expect(screen.getByText("Michael Chen")).toBeInTheDocument();
   });
 });

@@ -1,84 +1,52 @@
 "use client";
-import React, { useState } from "react";
-import styles from "./Container.module.css";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "../LoginPage/LoginContainer.module.css";
+import { auth, provider, signInWithPopup } from "../firebaseconfig";
+import RoleToggle from "../LoginPage/RoleToggle";
+import GoogleSignInButton from "../LoginPage/GoogleStudentButton";
+import LoginDisclaimer from "../LoginPage/LoginDisclaimer";
 
-const RoleOption = ({ icon, text, isActive, onClick }) => {
+function LoginContainer() {
+  const [selectedRole, setSelectedRole] = React.useState("student");
+  const navigate = useNavigate(); // Hook to navigate
+
+  const handleRoleChange = (role) => {
+    console.log("Role changed to:", role);
+    setSelectedRole(role);
+    if (role === "admin") {
+      navigate("/adminlogin");
+    } else {
+      navigate("/studentlogin");
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      console.log(`Signed in as ${result.user.displayName} with role${selectedRole}`);
+      localStorage.setItem("displayName", result.user.displayName); 
+     alert(" Account created successfully you will e notified when quizz are available for you!! ")
+
+    } catch (error) {
+      console.error("Google sign-in failed:", error.message);
+    }
+  };
+
   return (
-    <button
-      className={
-        text === "Admin" ? styles.roleOptionadmin : styles.roleOptionstudent
-      }
-      onClick={onClick}
-      aria-pressed={isActive}
-    >
-      <span className={styles.roleIcon}>
-        <div dangerouslySetInnerHTML={{ __html: icon }} />
-      </span>
-      <span className={styles.roleText}>{text}</span>
-    </button>
-  );
-};
+    <main className={styles.loginContainer}>
+      <section className={styles.loginCard}>
+        <h1 className={styles.welcomeText}>Welcome Back User</h1>
 
-function Container() {
-  const [selectedRole, setSelectedRole] = useState("Student");
+        <RoleToggle selectedRole={selectedRole} onRoleChange={handleRoleChange} />
 
-  return (
-    <main className={styles.container}>
-      <section className={styles.signInBox}>
-        <h1 className={styles.heading}>Choose your role to get started.</h1>
+        <GoogleSignInButton onSignIn={handleGoogleSignIn} />
 
-        <div
-          className={styles.roleSelector}
-          role="radiogroup"
-          aria-label="Select your role"
-        >
-          <RoleOption
-            icon='<svg id="172:866" style="width: 22px; height: 25px; fill: #4B5563"></svg>'
-            text="Admin"
-            isActive={selectedRole === "Admin"}
-            onClick={() => setSelectedRole("Admin")}
-          />
-          <RoleOption
-            icon='<svg id="172:871" style="width: 22px; height: 25px; fill: #16BC88"></svg>'
-            text="Student"
-            isActive={selectedRole === "Student"}
-            onClick={() => setSelectedRole("Student")}
-          />
-        </div>
 
-        <button
-          className={styles.googleSignin}
-          aria-label="Sign in with Google"
-        >
-          Sign in with Google
-        </button>
-
-        <p className={styles.signinInfo}>
-          Sign in with your Google account to continue
-          <br />
-          By signing in, you agree to our{" "}
-          <a
-            href="#"
-            className={styles.termsLink}
-            aria-label="View Terms and Privacy Policy"
-          >
-            Terms & Privacy Policy
-          </a>
-        </p>
-
-        <p className={styles.loginPrompt}>
-          Already have an account?{" "}
-          <a
-            href="#"
-            className={styles.loginLink}
-            aria-label="Login to your account"
-          >
-            Login Here
-          </a>
-        </p>
+        <LoginDisclaimer />
       </section>
     </main>
   );
 }
 
-export default Container;
+export default LoginContainer;

@@ -1,7 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./AdminDashboard.module.css";
+import { doc, getDocs,collection } from "firebase/firestore";
+import { auth, db } from "../firebaseconfig";
 
-const QuizItem = ({ name, participants, timeLeft, status }) => {
+const QuizItem = ({ participants, timeLeft, status ,name}) => {
+  const[quizzdata,setquizzdata]=useState([])
+  useEffect(() => {
+    const fetchData = async () => {
+      const quizzdata = collection(db, "quizzes");
+      const usersnapshot = await getDocs(quizzdata);
+      const datalist = usersnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setquizzdata(datalist);
+
+     
+    };
+    fetchData();
+  }, []);
+
+  
   return (
     <article className={styles.quizItem}>
       <h3 className={styles.quizName}>{name}</h3>

@@ -19,13 +19,13 @@ function HeroSection() {
         <div className={styles.ctaButtons}>
           <button
             className={styles.loginStudent}
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/studentlogin")}
           >
             Login as Student
           </button>
           <button
             className={styles.loginAdmin}
-            onClick={() => navigate("/signin")}
+            onClick={() => navigate("/adminlogin")}
           >
             Admin Login
           </button>

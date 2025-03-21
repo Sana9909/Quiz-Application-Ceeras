@@ -1,21 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, provider, signInWithPopup } from "../../firebaseconfig"; // Ensure correct import path
+import { auth, db, provider, signInWithPopup } from "../firebaseconfig";
 import styles from "./LoginContainer.module.css";
+import { getDoc, doc } from "firebase/firestore";
 
-const GoogleSignInButton = ({ onSignIn }) => {
+const GoogleSignInButton = () => {
   const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+      const adminDoc = doc(db, "Admin", "CerrasQuizAdmin");
+      const adminDetails = await getDoc(adminDoc);
+      const adminData = adminDetails.data();
 
-      console.log("User signed in:", user);
-      onSignIn(user); // Pass user data to parent component
-      navigate("/profile"); // Redirect to profile page
+      if (!adminData) {
+        alert("Admin data not found!");
+        return;
+      }
+
+      if (result.user.displayName === adminData?.Name) {
+        localStorage.setItem("displayName", result.user.displayName);
+        alert(`Welcome ${result.user.displayName}`);
+        navigate("/profile");
+      } else {
+        alert("Invalid Admin");
+      }
     } catch (error) {
       console.error("Google Sign-In Error:", error.message);
+      alert(`Error: ${error.message}`);
     }
   };
 

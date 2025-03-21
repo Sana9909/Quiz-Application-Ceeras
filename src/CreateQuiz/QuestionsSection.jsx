@@ -3,7 +3,7 @@ import styles from "./InputDesign.module.css";
 import QuestionCard from "./QuestionCard";
 
 const QuestionsSection = ({
-  questions,
+  rounds,
   onQuestionChange,
   onOptionChange,
   onAddQuestion,
@@ -11,48 +11,75 @@ const QuestionsSection = ({
   onAddOption,
   onRemoveOption,
   onSetCorrectOption,
+  onRoundSettingChange,
+  onAddRound,
 }) => {
   return (
-    <section
-      className={styles.questionsSection}
-      aria-labelledby="questions-heading"
-    >
+    <section className={styles.questionsSection} aria-labelledby="questions-heading">
       <div className={styles.sectionHeader}>
         <h2 id="questions-heading" className={styles.title}>
-          Questions
+          Rounds & Questions
         </h2>
         <button
-          className={styles.addQuestion}
-          onClick={onAddQuestion}
-          aria-label="Add new question"
+          className={styles.addRound}
+          onClick={onAddRound}
+          aria-label="Add new round"
         >
-          Add Question
+          Add Round
         </button>
       </div>
 
-      {questions.map((question, index) => (
-        <QuestionCard
-          key={question.id}
-          question={question}
-          questionNumber={index + 1}
-          onQuestionChange={(field, value) =>
-            onQuestionChange(question.id, field, value)
-          }
-          onOptionChange={(optionId, field, value) =>
-            onOptionChange(question.id, optionId, field, value)
-          }
-          onRemoveQuestion={() => onRemoveQuestion(question.id)}
-          onAddOption={() => onAddOption(question.id)}
-          onRemoveOption={(optionId) => onRemoveOption(question.id, optionId)}
-          onSetCorrectOption={(optionId) =>
-            onSetCorrectOption(question.id, optionId)
-          }
-        />
+      {rounds.map((round, roundIndex) => (
+        <div key={roundIndex} className={styles.roundContainer}>
+          <div className={styles.roundHeader}>
+            <h3 className={styles.roundTitle}>Round {roundIndex + 1}</h3>
+            <button
+              className={styles.addQuestion}
+              onClick={() => onAddQuestion(roundIndex)}
+              aria-label={`Add question to round ${roundIndex + 1}`}
+            >
+              Add Question
+            </button>
+          </div>
+
+          {round.questions.map((question, questionIndex) => (
+            <QuestionCard
+              key={question.id}
+              question={question}
+              questionNumber={questionIndex + 1}
+              roundNumber={roundIndex + 1}
+              roundSettings={round.settings}
+              onQuestionChange={(field, value) =>
+                onQuestionChange(roundIndex, question.id, field, value)
+              }
+              onOptionChange={(optionId, field, value) =>
+                onOptionChange(roundIndex, question.id, optionId, field, value)
+              }
+              onRemoveQuestion={() => onRemoveQuestion(roundIndex, question.id)}
+              onAddOption={() => onAddOption(roundIndex, question.id)}
+              onRemoveOption={(optionId) => 
+                onRemoveOption(roundIndex, question.id, optionId)
+              }
+              onSetCorrectOption={(optionId) =>
+                onSetCorrectOption(roundIndex, question.id, optionId)
+              }
+              onRoundSettingChange={(field, value) => 
+                onRoundSettingChange(roundIndex, field, value)
+              }
+            />
+          ))}
+
+          {round.questions.length === 0 && (
+            <p className={styles.noQuestions}>
+              No questions added for Round {roundIndex + 1}. Click "Add Question" to get started.
+            </p>
+          )}
+        </div>
       ))}
 
-      {questions.length === 0 && (
-        <p className={styles.noQuestions}>
-          No questions added yet. Click "Add Question" to get started.
+      {rounds.length === 0 && (
+        <p className={styles.noRounds}>
+          No rounds added yet. Click "Add Round" to get started.
         </p>
       )}
     </section>
